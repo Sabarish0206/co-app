@@ -9,7 +9,7 @@ class Student{
             CREATE TABLE IF NOT EXISTS Students (
                 student_id SERIAL PRIMARY KEY,
                 student_name VARCHAR(100) NOT NULL,
-                reg_number VARCHAR(50) UNIQUE NOT NULL,
+                reg_number BIGINT UNIQUE NOT NULL,
                 student_section VARCHAR(50),
                 student_year INT
             );

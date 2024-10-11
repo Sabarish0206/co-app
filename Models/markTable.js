@@ -4,14 +4,14 @@ class Marks {
     static async createTable() {
         const query = `
             CREATE TABLE IF NOT EXISTS marks (
-                reg_number INT NOT NULL,
+                reg_number BIGINT NOT NULL,
                 subject_code VARCHAR(100) NOT NULL,
-                co1 INT,
-                co2 INT,
-                co3_half_1 INT,
-                co3_half_2 INT,
-                co4 INT,
-                co5 INT,
+                co1 FLOAT,
+                co2 FLOAT,
+                co3_half_1 FLOAT,
+                co3_half_2 FLOAT,
+                co4 FLOAT,
+                co5 FLOAT,
                 PRIMARY KEY (reg_number, subject_code),
                 FOREIGN KEY (reg_number) REFERENCES Students(reg_number) ON DELETE CASCADE,
                 FOREIGN KEY (subject_code) REFERENCES subject(subject_code) ON DELETE CASCADE
