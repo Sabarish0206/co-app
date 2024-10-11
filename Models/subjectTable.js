@@ -43,6 +43,16 @@ class Subject {
             throw error;
         }
     }
+
+    static async getByCode(code) {
+        try {
+            const result = await pool.query('SELECT * FROM Subject WHERE subject_code = $1', [code]);
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error fetching subject:', error);
+            throw error;
+        }
+    }
 }
 
 export default Subject;
