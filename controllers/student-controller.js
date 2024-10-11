@@ -16,6 +16,7 @@ export const uploadStudentsFromExcel = async (req, res) => {
 }
 
 export const insertStudent = async (req, res) => {
+    await Student.createStudentsTable();
     try {
         const student = req.body;
         const insertedStudent = await Student.insert(student);
