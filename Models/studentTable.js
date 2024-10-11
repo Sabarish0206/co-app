@@ -82,6 +82,36 @@ class Student{
         }
     }
 
+    static async getStudentsByRegNumber(regNumber){
+        try {
+            const result = await pool.query('SELECT * FROM Students WHERE reg_number = $1', [regNumber]);
+            return result.rows;
+        } catch (error) {
+            console.error('Error retrieving students by reg_number:', error);
+            throw new Error('Could not retrieve students reg_number');
+        }
+    }
+
+    static async getStudentsByYear(year){
+        try {
+            const result = await pool.query('SELECT * FROM Students WHERE student_year = $1', [year]);
+            return result.rows;
+        } catch (error) {
+            console.error('Error retrieving students by year:', error);
+            throw new Error('Could not retrieve students by year');
+        }
+    }
+
+    static async getStudentsByYearAndSection(year,section) {
+        try {
+            const result = await pool.query('SELECT * FROM Students WHERE student_year = $1 AND student_section = $2', [year, section]);
+            return result.rows;
+        } catch (error) {
+            console.error('Error retrieving students by section:', error);
+            throw new Error('Could not retrieve students by section');
+        }
+    }
+
 }
 
 export default Student
