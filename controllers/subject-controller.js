@@ -40,17 +40,6 @@ export const getSubjectByCode = async (req, res) => {
     }
 }
 
-// Create the "Subject" table
-export const createSubjectTable = async (req, res) => {
-    try {
-        await Subject.createTable();
-        res.status(200).json({ message: 'Subject table created successfully' });
-    } catch (error) {
-        console.error('Error in createSubjectTable:', error);
-        res.status(500).json({ error: 'Could not create subject table' });
-    }
-}
-
 // Fetch subject details based on optional parameters
 export const getSubjectDetails = async (req, res) => {
     try {
