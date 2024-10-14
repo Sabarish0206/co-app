@@ -1,4 +1,6 @@
 import pool from '../config/db.js';
+import Subject from './subjectTable.js';
+import Student from './studentTable.js';
 
 class Marks {
     static async createTable() {
@@ -44,6 +46,11 @@ class Marks {
         `;
     
         try {
+            const student = await Student.getStudentsByRegNumber(reg_number);
+            const subject = await Subject.getByCode(subject_code);
+            if(subject.length === 0 || student.length === 0) {
+                throw new Error('Student or subject not matched');
+            }
             const result = await pool.query(query, [reg_number, subject_code, co1, co2, co3_half_1, co3_half_2, co4, co5]);
             return result.rows[0];
         } catch (error) {
