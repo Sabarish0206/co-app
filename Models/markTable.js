@@ -84,6 +84,24 @@ class Marks {
         throw new Error('Could not retrieve marks');
     }
     }
+
+    static async getCoBySubjectCode(subjectCode) {
+        const query = `
+        SELECT *
+        FROM marks
+        WHERE subject_code = $1;
+    `;
+
+    try {    
+        const result = await pool.query(query, [subjectCode]);
+        return result.rows;
+    } catch (error) {
+        console.error('Error retrieving marks:', error);
+        throw new Error('Could not retrieve marks');
+    }
+    }
+
+
 }
 
 export default Marks;

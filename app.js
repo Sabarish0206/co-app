@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 app.use(express.json());
 app.use("/student",studentRouter)
 app.use("/subject",subjectRouter)
-app.use("/mark",markRouter)
+app.use("/co",markRouter)
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
