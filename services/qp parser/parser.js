@@ -1,9 +1,34 @@
 import mammoth from 'mammoth';
 import fs from 'fs';
 import * as Cheerio from 'cheerio';
-import QuestionObject from '../models/questionobject.js';
 
-const parseDocxTables = async (filePath) => {
+const parseDocxTables = async (filePath,subjectId) => {
+
+  class QuestionObject {
+    constructor({
+        pi = null,
+        co = null,
+        bi = null,
+        marks = null,
+        question = null,
+        option = null,
+        subDivision = null,
+        no = null
+    } = {}) {
+        this.pi = pi;
+        this.co = co;
+        this.bi = bi;
+        this.marks = marks;
+        this.question = question;
+        this.option = option;
+        this.subDivision = subDivision;
+        this.no = no;
+    }
+
+}
+
+
+
   const fileBuffer = fs.readFileSync(filePath);
 
   // Convert .docx to HTML
@@ -90,14 +115,12 @@ const parseDocxTables = async (filePath) => {
           // Add the cell text to the array if it doesn't contain nested content
           const cellText = $(cell).text();
           nonNestedCells.push(cellText);
-          //console.log(`In Table ${tableIndex + 1}, Row ${rowIndex + 1}, Cell ${cellIndex}:`, cellText);
         } else {
           //console.log(`In Table ${tableIndex + 1}, Row ${rowIndex + 1}, Skipped cell ${cellIndex} because it contains nested content.`);
         }
       });
 
       // Output the array of non-nested cells
-      //nonNestedCells = nonNestedCells.filter(cellText => cellText !== '');      
         nonNestedCells.forEach((cellText, cellIndex) => {
             if(nonNestedCells.length>0){
             if (headers.length-1-cellIndex === headerColumnIndexes.pi) questionObj.pi = cellText;
@@ -109,23 +132,16 @@ const parseDocxTables = async (filePath) => {
               
                 if(regexTextOption.test(cellText.trim())){
                     questionObj.option = cellText;
-                    questionObj.subDivision = null;
-                    questionObj.no = null;
                 }else if(regexTextSubDivision.test(cellText.trim())){
                     questionObj.subDivision = cellText;
-                    questionObj.option = null;
-                    questionObj.no = null;
                 }else if(regexTextQuestionNo.test(cellText.trim())){
                     questionObj.no = cellText;
-                    questionObj.subDivision = null;
-                    questionObj.option = null;
                 }
             }
             else if (headers.length-1-cellIndex === headerColumnIndexes.no){
                 questionObj.no = cellText;
             };
           }
-
         });
 
         if (Object.keys(questionObj).length > 0) {
@@ -137,6 +153,7 @@ const parseDocxTables = async (filePath) => {
 
     const handleQuestionList = (questionList) => {
       let previousNo = null;
+      let previousOption = null;
       return questionList
         // Filter out objects that have all null fields and only one non-null field from array
         .filter((obj) => {
@@ -156,6 +173,11 @@ const parseDocxTables = async (filePath) => {
             question.no = previousNo;
           } else {
             previousNo = question.no;
+          } 
+          if(!question.option || question.option.trim() === ""){
+            question.option = previousOption;
+          } else{
+            previousOption = question.option;
           }
           return question;
         })
@@ -166,7 +188,29 @@ const parseDocxTables = async (filePath) => {
 
   });
   console.log("Output:", JSON.stringify(questionList, null, 2));
+
+const coObjects = questionList
+  .reduce((acc, question) => {
+    if (question.co && !acc.includes(question.co)) {
+      acc.push(question.co);
+    }
+    return acc;
+  }, [])
+  .map(co => ({
+    name: co,
+    description: "",
+    subject_id: subjectId
+  }));
+
+console.log("CO Objects:", JSON.stringify(coObjects, null, 2));
+
+  return {
+    coObjects,
+    questionList
+  };
+
 };
 
-const filePath = "sampleQp3.docx";
-parseDocxTables(filePath).catch((err) => console.error("Error:", err));
+const filePath = "DS ST-2.docx";
+parseDocxTables(filePath,'CS2313').catch((err) => console.error("Error:", err));
+
