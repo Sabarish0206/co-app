@@ -1,11 +1,14 @@
 import express from 'express';
 import subjectRouter from './routes/subjectRoutes.js'
+import studentRouter from './routes/studentRoutes.js'
+
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 
-app.use("/subjects",subjectRouter)
+app.use("/subjects",subjectRouter);
+app.use("/students",studentRouter);
 
 
 
