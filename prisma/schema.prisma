@@ -8,57 +8,97 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-
-
 model User {
-  id        String   @id @default(cuid()) // Primary Key
-  name      String   // Name of the user (faculty/admin)
-  email     String   @unique  // Unique email
-  password  String   // Password
-  role      Role     // Enum: 'faculty' or 'admin'
+  id       String    @id @default(cuid())
+  name     String
+  email    String    @unique
+  password String
+  role     Role
+  students Student[]
+}
 
-  // Relations
-  students  Student[] // Relation to students (faculty/admin may manage students)
+model Subject {
+  id         String          @id @default(cuid())
+  name       String
+  code       String          @unique
+  cos        CO[]
+  exams      Exam[]
+  questions  Question[]
+  studentCOs StudentCOMark[]
+}
+
+model CO {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  subjectId   String
+  subject     Subject         @relation(fields: [subjectId], references: [id])
+  questions   Question[]
+  studentCOs  StudentCOMark[]
+}
+
+model Exam {
+  id        String     @id @default(cuid())
+  name      ExamName
+  subjectId String
+  year      Int
+  subject   Subject    @relation(fields: [subjectId], references: [id])
+  questions Question[]
+}
+
+model Question {
+  id           String        @id @default(cuid())
+  text         String
+  coId         String
+  subjectId    String
+  examId       String
+  marks        Int
+  pi           String?
+  bi           String?
+  option       String?
+  subDivision  String?
+  no           Int
+  co           CO            @relation(fields: [coId], references: [id])
+  exam         Exam          @relation(fields: [examId], references: [id])
+  subject      Subject       @relation(fields: [subjectId], references: [id])
+  studentMarks StudentMark[]
+}
+
+model Student {
+  id           String          @id @default(cuid())
+  name         String
+  rollNumber   String          @unique
+  year         Year
+  sec          String
+  userId       String
+  user         User            @relation(fields: [userId], references: [id])
+  studentCOs   StudentCOMark[]
+  studentMarks StudentMark[]
+}
+
+model StudentMark {
+  id         String   @id @default(cuid())
+  studentId  String
+  questionId String
+  marks      Int
+  question   Question @relation(fields: [questionId], references: [id])
+  student    Student  @relation(fields: [studentId], references: [id])
+}
+
+model StudentCOMark {
+  id        String  @id @default(cuid())
+  studentId String
+  coId      String
+  subjectId String
+  marks     Int
+  co        CO      @relation(fields: [coId], references: [id])
+  student   Student @relation(fields: [studentId], references: [id])
+  subject   Subject @relation(fields: [subjectId], references: [id])
 }
 
 enum Role {
   faculty
   admin
-}
-
-model Subject {
-  id      String   @id @default(cuid()) // Primary Key
-  name    String   // Name of the subject
-  code    String   // Code of the subject
-
-  // Relations
-  cos     CO[]     // Relation to Course Outcomes
-  exams   Exam[]   // Relation to Exams
-  questions Question[] // Relation to Questions
-  studentCOs   StudentCOMark[] // Relation to StudentCO Marks
-}
-
-model CO {
-  id          String   @id @default(cuid()) // Primary Key
-  name        String   // CO name
-  description String?  // CO description (nullable)
-  subjectId   String   // Foreign key to Subject
-
-  // Relations
-  subject     Subject  @relation(fields: [subjectId], references: [id])  // Relation to Subject
-  questions   Question[] // Relation to Questions
-  studentCOs  StudentCOMark[] // Relation to StudentCO Marks
-}
-
-model Exam {
-  id        String   @id @default(cuid()) // Primary Key
-  name      ExamName // ENUM: 'Serial Test 1', 'Serial Test 2', 'Serial Test 3', 'Semester Exam 1', 'Semester Exam 2'
-  subjectId String   // Foreign key to Subject
-  year      Int      // Year of the exam
-
-  // Relations
-  subject   Subject  @relation(fields: [subjectId], references: [id])  // Relation to Subject
-  questions Question[] // Relation to Questions
 }
 
 enum ExamName {
@@ -69,68 +109,9 @@ enum ExamName {
   evenSem
 }
 
-model Question {
-  id          String  @id @default(cuid())  // Primary Key
-  text        String  // Question text
-  coId        String  // Foreign key to CO
-  subjectId   String  // Foreign key to Subject
-  examId      String  // Foreign key to Exam
-  marks       Int     // Marks for the question
-  pi          String? // PI (nullable)
-  bi          String? // BI (nullable)
-  option      String? // Option (nullable)
-  subDivision String? // Subdivision (nullable)
-  no          Int     // Question number
-
-  // Relations
-  co          CO      @relation(fields: [coId], references: [id]) // Relation to CO
-  subject     Subject @relation(fields: [subjectId], references: [id]) // Relation to Subject
-  exam        Exam    @relation(fields: [examId], references: [id]) // Relation to Exam
-
-  studentMarks StudentMark[] // Reverse relation to StudentMark
-}
-
-model Student {
-  id          String   @id @default(cuid()) // Primary Key
-  name        String   // Student name
-  rollNumber  String   @unique  // Roll number (unique)
-  year        Year     // Enum: 'I', 'II', 'III', 'IV'
-  sec         String   // Section of the student
-  userId      String   // Foreign key to User
-
-  // Relations
-  user        User     @relation(fields: [userId], references: [id])  // Relation to User
-  studentMarks StudentMark[]     // Relation to StudentMarks
-  studentCOs   StudentCOMark[]   // Relation to StudentCO Marks
-}
-
 enum Year {
   I
   II
   III
   IV
-}
-
-model StudentMark {
-  id         String   @id @default(cuid())  // Primary Key
-  studentId  String   // Foreign key to Student
-  questionId String   // Foreign key to Question
-  marks      Int      // Marks scored by the student for the question
-
-  // Relations
-  student    Student  @relation(fields: [studentId], references: [id])  // Relation to Student
-  question   Question @relation(fields: [questionId], references: [id]) // Relation to Question
-}
-
-model StudentCOMark {
-  id         String   @id @default(cuid())  // Primary Key
-  studentId  String   // Foreign key to Student
-  coId       String   // Foreign key to CO
-  subjectId  String   // Foreign key to Subject
-  marks      Int      // Marks scored by the student for the CO
-
-  // Relations
-  student    Student  @relation(fields: [studentId], references: [id])  // Relation to Student
-  co         CO       @relation(fields: [coId], references: [id])  // Relation to CO
-  subject    Subject  @relation(fields: [subjectId], references: [id]) // Relation to Subject
 }
