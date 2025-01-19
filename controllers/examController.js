@@ -17,3 +17,12 @@ export const createExam = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const getExamByNameSubjectIdYear = async (req, res) => {
+    try {
+        const exam = await examService.findExamByNameSubjectIdYear(req.params.subjectId, req.params.year, req.params.name);
+        res.status(200).json(exam);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+}
+};

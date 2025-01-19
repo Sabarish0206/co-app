@@ -1,36 +1,48 @@
 import { unlinkSync } from 'fs';
 import { parseDocxTables } from './qp parser/parser.js';
 import { getSubjectByCode } from './subjectService.js';
-import {createCos} from './coService.js';
+import { findExamByNameSubjectIdYear } from './examService.js';
+import * as questionPaperModel from '../models/questionPaperModel.js';
+import * as coService from './coService.js';
 
 export const parseQuestionPaper = async (filePath, subject, exam) => {
     const questionPaper = await parseDocxTables(filePath);
     unlinkSync(filePath);
+    console.log(questionPaper);
     return questionPaper;
 }
 
-export const createQuestions = async (subject,questions, exam) => {
+export const createQuestion = async (subject,question, exam) => {
 
-    const subjectId =await getSubjectByCode(subject);
-    // const examId = getExamByName(exam).id;
+  console.log(subject);
+  const { id: subjectId } = await getSubjectByCode(subject);
+  const { id: examId } = await findExamByNameSubjectIdYear(subjectId, exam.name, exam.year);
 
-    // Identify co from each subject and create a unique co list
-    const coSet = new Set();
-    console.log(questions);
-    questions.forEach(question => {
-      if (question.co) {
-        coSet.add(question.co);
-      }
-    });
+  const co = Number(question.co);
+  const coId = await coService.findCoIdorCreateNew(co,examId);
 
-    const coObjects = Array.from(coSet).map(co => ({
-      name: co,
-      description: "",
-      subject_id: subjectId.id
-    }));
+  const questionObject = {
+    question: question.question,
+    marks: question.marks,
+    option: question.option,
+    subDivision: question.subDivision,
+    pi: question.pi,
+    bl: question.bi,
+    co: coId,
+    no: question.no,
+    subjectId: subjectId,
+    examId: examId
+  }
 
-    //Push COs to CO Table
-    const co =await createCos(coObjects);
+  return await questionPaperModel.createQuestion(questionObject);
 
-    // return await coObjects;
+}
+
+export const createQuestions = async (subject,questionList,exam) => {
+  const questions = [];
+  for(const question of questionList){
+    const newQuestion = await createQuestion(subject, question, exam);
+    questions.push(newQuestion);
+  }
+  return questions;
 }

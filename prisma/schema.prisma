@@ -26,12 +26,14 @@ model Subject {
 
 model CO {
   id          String          @id @default(cuid())
-  name        String
+  name        Int
   description String?
   examId      String
   exam        Exam            @relation(fields:[examId],references:[id])
   questions   Question[]
   studentCOs  StudentCOMark[]
+
+  @@unique([name,examId])
 }
 
 model Exam {
@@ -45,25 +47,28 @@ model Exam {
   cos        CO[]    
   studentCOs StudentCOMark[] 
 
-  @@unique([subjectId, semester, year])  
+  @@unique([subjectId, name, year])  
 }
 
 model Question {
   id           String        @id @default(cuid())
-  text         String
-  coId         String
-  subjectId    String
-  examId       String
-  marks        Int
-  pi           String?
-  bi           String?
+  no           Int
   option       String?
   subDivision  String?
-  no           Int
-  co           CO            @relation(fields: [coId], references: [id])
+  text         String
+  marks        Int
+  coId         String?
+  pi           String?
+  bl           String?
+  subjectId    String
+  examId       String
+
+  co           CO?            @relation(fields: [coId], references: [id])
   exam         Exam          @relation(fields: [examId], references: [id])
   subject      Subject       @relation(fields: [subjectId], references: [id])
   studentMarks StudentMark[]
+
+  @@unique([no,subDivision,option,examId])
 }
 
 model Student {

@@ -4,6 +4,7 @@ import * as examController from "../controllers/examController.js";
 const examRouter = express.Router();
 
 examRouter.get("/",examController.getAllExams);
+examRouter.get("/:subjectId/:year/:name",examController.getExamByNameSubjectIdYear)
 examRouter.post("/create",examController.createExam);
 
 

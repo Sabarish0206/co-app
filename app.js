@@ -1,7 +1,7 @@
 import express from 'express';
 import subjectRouter from './routes/subjectRoutes.js'
 import studentRouter from './routes/studentRoutes.js'
-import questionPaperRouter from './routes/questionPaper.js';
+import questionPaperRouter from './routes/questionPaperRouter.js';
 import examRouter from './routes/examRoutes.js';
 
 const app = express();

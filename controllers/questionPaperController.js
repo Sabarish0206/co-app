@@ -31,8 +31,8 @@ export const uploadQuestionPaper =[
 
 export const createQuestions = async (req, res) => {
         try {
-            const {subject,question} = req.body;
-            const questions = await questionService.createQuestions(subject,question);
+            const {subject,questionList,exam} = req.body;
+            const questions = await questionService.createQuestions(subject,questionList,exam);
             res.status(200).json(questions);
         } catch (error) {
             res.status(500).json({ error: error.message }); 
