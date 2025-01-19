@@ -1,0 +1,10 @@
+import express from "express";
+import * as examController from "../controllers/examController.js";
+
+const examRouter = express.Router();
+
+examRouter.get("/",examController.getAllExams);
+examRouter.post("/create",examController.createExam);
+
+
+export default examRouter;

@@ -20,18 +20,16 @@ model Subject {
   id         String          @id @default(cuid())
   name       String
   code       String          @unique
-  cos        CO[]
   exams      Exam[]
   questions  Question[]
-  studentCOs StudentCOMark[]
 }
 
 model CO {
   id          String          @id @default(cuid())
   name        String
   description String?
-  subjectId   String
-  subject     Subject         @relation(fields: [subjectId], references: [id])
+  examId      String
+  exam        Exam            @relation(fields:[examId],references:[id])
   questions   Question[]
   studentCOs  StudentCOMark[]
 }
@@ -42,7 +40,12 @@ model Exam {
   subjectId String
   year      Int
   subject   Subject    @relation(fields: [subjectId], references: [id])
+  semester  Int
   questions Question[]
+  cos        CO[]    
+  studentCOs StudentCOMark[] 
+
+  @@unique([subjectId, semester, year])  
 }
 
 model Question {
@@ -87,11 +90,12 @@ model StudentCOMark {
   id        String  @id @default(cuid())
   studentId String
   coId      String
-  subjectId String
+  examId String
   marks     Int
+  coTotal   Int
   co        CO      @relation(fields: [coId], references: [id])
   student   Student @relation(fields: [studentId], references: [id])
-  subject   Subject @relation(fields: [subjectId], references: [id])
+  exam      Exam @relation(fields: [examId], references: [id])
 }
 
 enum Role {
