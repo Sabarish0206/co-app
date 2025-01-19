@@ -2,7 +2,7 @@ import mammoth from 'mammoth';
 import fs from 'fs';
 import * as Cheerio from 'cheerio';
 
-const parseDocxTables = async (filePath,subjectId) => {
+export const parseDocxTables = async (filePath) => {
 
   class QuestionObject {
     constructor({
@@ -37,7 +37,7 @@ const parseDocxTables = async (filePath,subjectId) => {
   // Parse HTML with Cheerio
   const $ = Cheerio.load(result.value);
   let questionList = [];
-  console.log("Parsing Tables:");
+  // console.log("Parsing Tables:");
   // Loop through each table in the document
   $("table").each((tableIndex, table) => {
     let headers = [];
@@ -85,7 +85,7 @@ const parseDocxTables = async (filePath,subjectId) => {
                 pi: headers.indexOf('pi') !== -1 ? headers.indexOf('pi') : null,
             };
 
-          console.log(`Headers detected in Table ${tableIndex + 1}, Row ${rowIndex + 1}:`, headers);
+          // console.log(`Headers detected in Table ${tableIndex + 1}, Row ${rowIndex + 1}:`, headers);
           foundHeader = true;
         }
       } else {
@@ -187,30 +187,16 @@ const parseDocxTables = async (filePath,subjectId) => {
     questionList=handleQuestionList(questionList);
 
   });
-  console.log("Output:", JSON.stringify(questionList, null, 2));
+  // console.log("Output:", JSON.stringify(questionList, null, 2));
 
-const coObjects = questionList
-  .reduce((acc, question) => {
-    if (question.co && !acc.includes(question.co)) {
-      acc.push(question.co);
-    }
-    return acc;
-  }, [])
-  .map(co => ({
-    name: co,
-    description: "",
-    subject_id: subjectId
-  }));
-
-console.log("CO Objects:", JSON.stringify(coObjects, null, 2));
+// console.log("CO Objects:", JSON.stringify(coObjects, null, 2));
 
   return {
-    coObjects,
     questionList
   };
 
 };
 
-const filePath = "DS ST-2.docx";
-parseDocxTables(filePath,'CS2313').catch((err) => console.error("Error:", err));
+//const filePath = "DS ST-2.docx";
+//parseDocxTables(filePath,'CS2313').catch((err) => console.error("Error:", err));
 

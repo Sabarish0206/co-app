@@ -1,0 +1,40 @@
+import * as questionService from '../services/questionPaperService.js';
+import multer from 'multer';
+
+
+export const getAllQuestions = async (req, res) => {
+        try {
+            const questions = await questionService.getAllQuestions();
+            res.status(200).json(questions);
+        } catch (error) {
+            res.status(500).json({ error: error.message }); 
+        }
+    };
+
+const upload = multer({ dest: 'uploads/' });
+
+export const uploadQuestionPaper =[
+    upload.single('file'),
+    async (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+        try {
+            const questions = await questionService.parseQuestionPaper(req.file.path);
+            res.status(200).json({ message: 'Parse Questions from Question Paper', questions });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error uploading question paper', error: error.message });
+        }
+    }
+]
+
+export const createQuestions = async (req, res) => {
+        try {
+            const {subject,question} = req.body;
+            const questions = await questionService.createQuestions(subject,question);
+            res.status(200).json(questions);
+        } catch (error) {
+            res.status(500).json({ error: error.message }); 
+        }
+    };

@@ -1,6 +1,8 @@
 import express from 'express';
 import subjectRouter from './routes/subjectRoutes.js'
 import studentRouter from './routes/studentRoutes.js'
+import questionPaperRouter from './routes/questionPaper.js';
+import examRouter from './routes/examRoutes.js';
 
 const app = express();
 const PORT = 3000;
@@ -9,6 +11,8 @@ app.use(express.json());
 
 app.use("/subjects",subjectRouter);
 app.use("/students",studentRouter);
+app.use("/questionpaper",questionPaperRouter);
+app.use("/exam",examRouter)
 
 
 
