@@ -12,11 +12,7 @@ export const parseQuestionPaper = async (filePath, subject, exam) => {
     return questionPaper;
 }
 
-export const createQuestion = async (subject,question, exam) => {
-
-  console.log(subject);
-  const { id: subjectId } = await getSubjectByCode(subject);
-  const { id: examId } = await findExamByNameSubjectIdYear(subjectId, exam.name, exam.year);
+export const createQuestion = async (subjectId,question,examId) => {
 
   const co = Number(question.co);
   const coId = await coService.findCoIdorCreateNew(co,examId);
@@ -39,9 +35,12 @@ export const createQuestion = async (subject,question, exam) => {
 }
 
 export const createQuestions = async (subject,questionList,exam) => {
+  const { id: subjectId } = await getSubjectByCode(subject);
+  const { id: examId } = await findExamByNameSubjectIdYear(subjectId, exam.name, exam.year);
+
   const questions = [];
   for(const question of questionList){
-    const newQuestion = await createQuestion(subject, question, exam);
+    const newQuestion = await createQuestion(subjectId, question, examId);
     questions.push(newQuestion);
   }
   return questions;

@@ -127,13 +127,12 @@ export const parseDocxTables = async (filePath) => {
       // Output the array of non-nested cells
         nonNestedCells.forEach((cellText, cellIndex) => {
             if(nonNestedCells.length>0){
-            if (headers.length-1-cellIndex === headerColumnIndexes.pi) questionObj.pi = cellText;
-            else if (headers.length-1-cellIndex === headerColumnIndexes.bl) questionObj.bl = cellText;
-            else if (headers.length-1-cellIndex === headerColumnIndexes.co) questionObj.co = cellText;
-            else if (headers.length-1-cellIndex === headerColumnIndexes.marks) questionObj.marks = cellText;
-            else if (headers.length-1-cellIndex === headerColumnIndexes.question) questionObj.question = cellText;
+            if (headers.length-1-cellIndex === headerColumnIndexes.pi) questionObj.pi = cellText.trim();
+            else if (headers.length-1-cellIndex === headerColumnIndexes.bl) questionObj.bl = cellText.trim();
+            else if (headers.length-1-cellIndex === headerColumnIndexes.co) questionObj.co = cellText.trim();
+            else if (headers.length-1-cellIndex === headerColumnIndexes.marks) questionObj.marks = cellText.trim();
+            else if (headers.length-1-cellIndex === headerColumnIndexes.question) questionObj.question = cellText.trim();
             else if(headers.length-1-cellIndex<headerColumnIndexes.question){
-              
                 if(regexTextOption.test(removeSpaces(cellText))){
                     questionObj.option = cellText.trim()[0];
                 }else if(regexTextSubDivision.test(cellText.trim())){
@@ -190,9 +189,7 @@ export const parseDocxTables = async (filePath) => {
     };
     
     questionList=handleQuestionList(questionList);
-
     
-
   });
 
   const processedQuestions = processQuestionsSubdivision(questionList);
