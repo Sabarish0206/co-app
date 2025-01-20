@@ -2,13 +2,17 @@ import mammoth from 'mammoth';
 import fs from 'fs';
 import * as Cheerio from 'cheerio';
 
+function removeSpaces(text) {
+  return text.replace(/\s+/g, "");
+}
+
 export const parseDocxTables = async (filePath) => {
 
   class QuestionObject {
     constructor({
         pi = null,
         co = null,
-        bi = null,
+        bl = null,
         marks = null,
         question = null,
         option = null,
@@ -17,7 +21,7 @@ export const parseDocxTables = async (filePath) => {
     } = {}) {
         this.pi = pi;
         this.co = co;
-        this.bi = bi;
+        this.bl = bl;
         this.marks = marks;
         this.question = question;
         this.option = option;
@@ -48,7 +52,7 @@ export const parseDocxTables = async (filePath) => {
         subDivision: 2,
         question: 3,
         marks: null,
-        bi: null,
+        bl: null,
         co: null,
         pi: null,
     };
@@ -81,7 +85,7 @@ export const parseDocxTables = async (filePath) => {
                 question: headers.indexOf('question') !== -1 ? headers.indexOf('question') : headerColumnIndexes.question,
                 marks: headers.indexOf('marks') !== -1 ? headers.indexOf('marks') : null,
                 co: headers.indexOf('co') !== -1 ? headers.indexOf('co') : null,
-                bi: headers.indexOf('bi') !== -1 ? headers.indexOf('bi') : headers.indexOf('bl') !== -1 ? headers.indexOf('bl') : null,
+                bl: headers.indexOf('bl') !== -1 ? headers.indexOf('bl') : headers.indexOf('bl') !== -1 ? headers.indexOf('bl') : null,
                 pi: headers.indexOf('pi') !== -1 ? headers.indexOf('pi') : null,
             };
 
@@ -89,14 +93,14 @@ export const parseDocxTables = async (filePath) => {
           foundHeader = true;
         }
       } else {
-        const regexTextOption = /^[a-zA-Z](?:\.{0,3}|[. ]{1,3})?$/;
+        const regexTextOption = /^[a-fA-F](i(\.|\))?)?$/;
         const regexTextSubDivision = /^\(?i{1,3}\)?(\.|\))?$/;
         const regexTextQuestionNo = /^[0-9]+(\n[0-9]+)*$/;
 
         const questionObj = {
             pi: null,
             co: null,
-            bi: null,
+            bl: null,
             marks: null,
             question: null,
             option: null,
@@ -124,14 +128,14 @@ export const parseDocxTables = async (filePath) => {
         nonNestedCells.forEach((cellText, cellIndex) => {
             if(nonNestedCells.length>0){
             if (headers.length-1-cellIndex === headerColumnIndexes.pi) questionObj.pi = cellText;
-            else if (headers.length-1-cellIndex === headerColumnIndexes.bi) questionObj.bi = cellText;
+            else if (headers.length-1-cellIndex === headerColumnIndexes.bl) questionObj.bl = cellText;
             else if (headers.length-1-cellIndex === headerColumnIndexes.co) questionObj.co = cellText;
             else if (headers.length-1-cellIndex === headerColumnIndexes.marks) questionObj.marks = cellText;
             else if (headers.length-1-cellIndex === headerColumnIndexes.question) questionObj.question = cellText;
             else if(headers.length-1-cellIndex<headerColumnIndexes.question){
               
-                if(regexTextOption.test(cellText.trim())){
-                    questionObj.option = cellText;
+                if(regexTextOption.test(removeSpaces(cellText))){
+                    questionObj.option = cellText.trim()[0];
                 }else if(regexTextSubDivision.test(cellText.trim())){
                     questionObj.subDivision = cellText;
                 }else if(regexTextQuestionNo.test(cellText.trim())){
@@ -154,6 +158,7 @@ export const parseDocxTables = async (filePath) => {
     const handleQuestionList = (questionList) => {
       let previousNo = null;
       let previousOption = null;
+
       return questionList
         // Filter out objects that have all null fields and only one non-null field from array
         .filter((obj) => {
@@ -186,17 +191,56 @@ export const parseDocxTables = async (filePath) => {
     
     questionList=handleQuestionList(questionList);
 
+    
+
   });
-  // console.log("Output:", JSON.stringify(questionList, null, 2));
 
-// console.log("CO Objects:", JSON.stringify(coObjects, null, 2));
-
-  return {
-    questionList
-  };
-
+  const processedQuestions = processQuestionsSubdivision(questionList);
+  
+  return processedQuestions;
 };
 
-//const filePath = "DS ST-2.docx";
-//parseDocxTables(filePath,'CS2313').catch((err) => console.error("Error:", err));
 
+function processQuestionsSubdivision(questionList) {
+  const queue = [];
+  let subdivisionCounter = 1;
+
+  questionList.forEach((question, index) => {
+
+      if (queue.length === 0) {
+          queue.push(question);
+          return;
+      }
+
+      const currentQuestion = queue[queue.length - 1];
+      
+      if (currentQuestion.no === question.no && currentQuestion.option === question.option) {
+          queue.push(question);
+      } else {
+        
+          //Before pushing the current question into the queue, process the queue
+          subdivisionCounter = 1;
+          if (queue.length === 1) {
+              queue[0].subDivision = null;
+          } else {
+              queue.forEach((q, i) => {
+                  q.subDivision = (subdivisionCounter + i).toString();
+              });
+          }
+
+          queue.length = 0;
+          queue.push(question);
+      }
+  });
+
+  // Processing for any remaining elements in the queue
+  if (queue.length === 1) {
+      queue[0].subDivision = null;
+  } else {
+      queue.forEach((q, i) => {
+          q.subDivision = (subdivisionCounter + i).toString();
+      });
+  }
+
+  return questionList;
+}

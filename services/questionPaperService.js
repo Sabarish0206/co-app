@@ -27,7 +27,7 @@ export const createQuestion = async (subject,question, exam) => {
     option: question.option,
     subDivision: question.subDivision,
     pi: question.pi,
-    bl: question.bi,
+    bl: question.bl,
     co: coId,
     no: question.no,
     subjectId: subjectId,
