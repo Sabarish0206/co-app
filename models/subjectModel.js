@@ -24,3 +24,7 @@ export const deleteSubject = async (id) => {
 
   return await prisma.subject.delete({ where: { id } });
 }
+
+export const findSubjectByName = async (name) => {
+    return await prisma.subject.findFirst({ where: { name } });
+}

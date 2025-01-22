@@ -12,13 +12,14 @@ export const findAllExams = async () => {
     return await prisma.exam.findMany();
 }
 
-export const findExamByNameSubjectIdYear = async (subjectId, name, year) => {
+export const findExamByNameSubjectIdYearSemester = async (subjectId, name, year, semester) => {
     return await prisma.exam.findUnique({
         where: {
-          subjectId_name_year: {
-            name: name,
+          subjectId_name_year_semester: {
             subjectId: subjectId,
-            year: year
+            name: name,
+            year: year,
+            semester: semester
           }
         }
       });

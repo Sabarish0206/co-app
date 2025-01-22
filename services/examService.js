@@ -19,8 +19,8 @@ export const getAllExams = async () => {
 }
 
 
-export const findExamByNameSubjectIdYear = async (subjectId, name, year) => {
-    return await examModel.findExamByNameSubjectIdYear(subjectId, name, year);
+export const findExamByNameSubjectIdYearSemester = async (subjectId, name, year,semester) => {
+    return await examModel.findExamByNameSubjectIdYearSemester(subjectId, name, year, semester);
 }
 
 // export const findExamIdByNameSemes

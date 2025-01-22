@@ -47,7 +47,7 @@ model Exam {
   cos        CO[]    
   studentCOs StudentCOMark[] 
 
-  @@unique([subjectId, name, year])  
+  @@unique([subjectId, name, year,semester])  
 }
 
 model Question {

@@ -38,3 +38,13 @@ export const createQuestions = async (req, res) => {
             res.status(500).json({ error: error.message }); 
         }
     };
+
+export const getQuestionsByExam = async (req,res)=>{
+    try{
+        const {subjectName,examName,year,semester}=req.body;
+        const questions = await questionService.getQuestionsByExam(subjectName, examName, year, semester);
+        res.status(200).json(questions);
+    } catch(error){
+        res.status(500).json({ error: error.message });
+    }
+}

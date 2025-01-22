@@ -39,3 +39,10 @@ export const deleteSubject = async (id) => {
         throw new Error(`No subject with id ${id}`);
     return await subjectModel.deleteSubject(id);
 }
+
+export const getSubjectByName = async (name) => {
+    const subject = await subjectModel.findSubjectByName(name);
+    if(!subject)
+        throw new Error(`No subject with name ${name}`);
+    return subject;
+}

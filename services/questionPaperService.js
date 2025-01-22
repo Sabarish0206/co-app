@@ -1,7 +1,7 @@
 import { unlinkSync } from 'fs';
 import { parseDocxTables } from './qp parser/parser.js';
-import { getSubjectByCode } from './subjectService.js';
-import { findExamByNameSubjectIdYear } from './examService.js';
+import { getSubjectByCode, getSubjectByName } from './subjectService.js';
+import { findExamByNameSubjectIdYearSemester } from './examService.js';
 import * as questionPaperModel from '../models/questionPaperModel.js';
 import * as coService from './coService.js';
 
@@ -36,7 +36,7 @@ export const createQuestion = async (subjectId,question,examId) => {
 
 export const createQuestions = async (subject,questionList,exam) => {
   const { id: subjectId } = await getSubjectByCode(subject);
-  const { id: examId } = await findExamByNameSubjectIdYear(subjectId, exam.name, exam.year);
+  const { id: examId } = await findExamByNameSubjectIdYearSemester(subjectId, exam.name, exam.year, exam.semester);
 
   const questions = [];
   for(const question of questionList){
@@ -44,4 +44,13 @@ export const createQuestions = async (subject,questionList,exam) => {
     questions.push(newQuestion);
   }
   return questions;
+}
+
+export const getQuestionsByExam = async (subjectName,examName,year,semester) =>{
+  const { id: subjectId } = await getSubjectByName(subjectName);
+  const {id: examId} = await findExamByNameSubjectIdYearSemester(subjectId, examName, year,semester)
+
+  const result = await questionPaperModel.findQuestionByExamId(examId);
+
+  return result;
 }
