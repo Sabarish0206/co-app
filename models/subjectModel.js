@@ -28,3 +28,4 @@ export const deleteSubject = async (id) => {
 export const findSubjectByName = async (name) => {
     return await prisma.subject.findFirst({ where: { name } });
 }
+

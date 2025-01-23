@@ -3,11 +3,14 @@ import subjectRouter from './routes/subjectRoutes.js'
 import studentRouter from './routes/studentRoutes.js'
 import questionPaperRouter from './routes/questionPaperRouter.js';
 import examRouter from './routes/examRoutes.js';
+import cors from 'cors';
 
 const app = express();
 const PORT = 3000;
 
+app.use(cors());
 app.use(express.json());
+
 
 app.use("/subjects",subjectRouter);
 app.use("/students",studentRouter);

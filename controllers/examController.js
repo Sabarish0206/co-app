@@ -18,9 +18,9 @@ export const createExam = async (req, res) => {
     }
 };
 
-export const getExamByNameSubjectIdYear = async (req, res) => {
+export const getExamByNameSubjectIdYearSemester = async (req, res) => {
     try {
-        const exam = await examService.findExamByNameSubjectIdYear(req.params.subjectId, req.params.year, req.params.name);
+        const exam = await examService.findExamByNameSubjectIdYearSemester(req.params.subjectId, req.params.year, req.params.name, req.params.semester);
         res.status(200).json(exam);
     } catch (error) {
         res.status(500).json({ error: error.message });

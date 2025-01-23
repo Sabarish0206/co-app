@@ -7,7 +7,7 @@ const questionPaperRouter = express.Router();
 questionPaperRouter.get("/",questionPaperController.getAllQuestions);
 questionPaperRouter.post("/upload",questionPaperController.uploadQuestionPaper);
 questionPaperRouter.post("/create",questionPaperController.createQuestions);
-questionPaperRouter.get("/examQuestions",questionPaperController.getQuestionsByExam);
+questionPaperRouter.get("/examQuestions/:subjectName/:examName/:examYear/:semester",questionPaperController.getQuestionsByExam);
 
 
 

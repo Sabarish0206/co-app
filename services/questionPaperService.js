@@ -46,9 +46,9 @@ export const createQuestions = async (subject,questionList,exam) => {
   return questions;
 }
 
-export const getQuestionsByExam = async (subjectName,examName,year,semester) =>{
+export const getQuestionsByExam = async (subjectName,exam) =>{
   const { id: subjectId } = await getSubjectByName(subjectName);
-  const {id: examId} = await findExamByNameSubjectIdYearSemester(subjectId, examName, year,semester)
+  const {id: examId} = await findExamByNameSubjectIdYearSemester(subjectId, exam.examName, exam.year,exam.semester)
 
   const result = await questionPaperModel.findQuestionByExamId(examId);
 
