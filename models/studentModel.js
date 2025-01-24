@@ -1,3 +1,4 @@
+import { Department } from '@prisma/client/wasm';
 import prisma from '../config/db.js';
 
 export const upsertStudent = async (student) => {
@@ -42,3 +43,17 @@ export const findAll = async () => {
     throw new Error(`Database error: ${error.message}`);
   }
 }
+
+export const findStudentsByYearSecAndDept = async (year, sec, dept) => {
+  try {
+    return await prisma.student.findMany({
+      where: {
+        year: year,
+        sec: sec,
+        department: dept
+      },
+    });
+  } catch (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+};

@@ -1,9 +1,10 @@
 import express from 'express';
-import { uploadStudents,getAllStudents,getStudentsByYearAndSec } from '../controllers/studentController.js';
+import { uploadStudents,getAllStudents,getStudentsByYearAndSec,getStudentsByYearSecAndDept } from '../controllers/studentController.js';
 const studentRouter =  express.Router();
 
 studentRouter.post("/upload",uploadStudents);
 studentRouter.get("/",getAllStudents);
 studentRouter.get("/:year/:sec",getStudentsByYearAndSec);
+studentRouter.get("/cse/:year/:sec/:dept",getStudentsByYearSecAndDept);
 
 export default studentRouter;

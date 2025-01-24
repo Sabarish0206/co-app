@@ -39,3 +39,11 @@ export const getAllStudents = async (req, res) => {
     res.status(500).json({ error: error.message }); 
   }
 };
+export const getStudentsByYearSecAndDept = async (req, res) => {
+  try {
+    const students = await studentService.getStudentsByYearSecAndDept(req.params.year, req.params.sec, req.params.dept);
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({ error: error.message }); 
+  }
+}

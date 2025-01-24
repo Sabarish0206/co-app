@@ -26,3 +26,11 @@ export const getExamByNameSubjectIdYearSemester = async (req, res) => {
         res.status(500).json({ error: error.message });
 }
 };
+export const getUniqueExamNames = async (req, res) => {
+    try {
+        const uniqueExamNames = await examService.getUniqueExamNames();
+        res.status(200).json(uniqueExamNames);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
