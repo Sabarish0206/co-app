@@ -41,9 +41,9 @@ export const createQuestions = async (req, res) => {
 
 export const getQuestionsByExam = async (req,res)=>{
     try{
-        const {subjectName,examName,examYear,semester}=req.params;
+        const {subjectCode,examName,examYear,semester}=req.params;
         const exam = {examName,year:parseInt(examYear),semester:parseInt(semester)};
-        const questions = await questionService.getQuestionsByExam(subjectName, exam);
+        const questions = await questionService.getQuestionsByExam(subjectCode, exam);
         res.status(200).json(questions);
     } catch(error){
         res.status(500).json({ error: error.message });
