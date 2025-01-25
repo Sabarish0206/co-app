@@ -23,4 +23,11 @@ export const findExamByNameSubjectIdYearSemester = async (subjectId, name, year,
     return await examModel.findExamByNameSubjectIdYearSemester(subjectId, name, year, semester);
 }
 
-// export const findExamIdByNameSemes
+export const getUniqueExamNames = async () => {
+    const exams = await examModel.findAllExams();
+    const examNames = exams.map(exam => exam.name);
+    const uniqueExamNames = [...new Set(examNames)];
+
+    
+    return uniqueExamNames;
+}

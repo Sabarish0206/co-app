@@ -72,3 +72,18 @@ export const getStudentsByYearAndSec = async (year, sec) => {
     throw new Error(`Error fetching students from the database: ${error.message}`);
   }
 }
+ export const getStudentsByYearSecAndDept = async (year, sec, dept) => {
+  try {
+    year = year.toUpperCase();
+    sec = sec.toUpperCase();
+    dept = dept.toUpperCase();
+    const students = await studentModel.findStudentsByYearSecAndDept(year, sec, dept);
+    if (!students || students.length === 0) {
+      throw new Error(`No students found in the database with year ${year}, section ${sec}, and department ${dept}`);
+    }
+    return students;
+  } catch (error) {
+    throw new Error(`Error fetching students from the database: ${error.message}`);
+  }
+}
+

@@ -8,5 +8,4 @@ subjectRouter.get("/:code",subjectController.getSubjectByCode);
 subjectRouter.post("/",subjectController.createSubject);
 subjectRouter.delete("/",subjectController.deleteSubject);
 
-export default subjectRouter;
- 
+export default subjectRouter; 
