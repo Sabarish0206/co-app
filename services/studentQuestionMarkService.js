@@ -66,3 +66,7 @@ export const createStudentQuestionMark = async (data) => {
     return data;
     //return await studentQuestionMarkModel.createStudentQuestionMark(data);
 }
+
+export const getStudentQuestionMarksByStudentIdQuestionId = async (studentId, questionId) => {
+    return await studentQuestionMarkModel.getStudentQuestionMarksByStudentIdQuestionId(studentId, questionId);
+}

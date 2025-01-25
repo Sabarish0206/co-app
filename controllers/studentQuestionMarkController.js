@@ -8,3 +8,12 @@ export const createStudentsQuestionsMark = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+export const getStudentQuestionMarksByStudentIdQuestionId = async (req, res) => {
+    try {
+        const studentQuestionMarks = await studentQuestionMarkService.getStudentQuestionMarksByStudentIdQuestionId(req.params.studentId, req.params.questionId);
+        res.status(200).json(studentQuestionMarks);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

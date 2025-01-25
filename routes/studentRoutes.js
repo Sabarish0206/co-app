@@ -5,6 +5,6 @@ const studentRouter =  express.Router();
 studentRouter.post("/upload",uploadStudents);
 studentRouter.get("/",getAllStudents);
 studentRouter.get("/:year/:sec",getStudentsByYearAndSec);
-studentRouter.get("/cse/:year/:sec/:dept",getStudentsByYearSecAndDept);
+studentRouter.get("/:year/:sec/:dept",getStudentsByYearSecAndDept);
 
 export default studentRouter;

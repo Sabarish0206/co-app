@@ -5,5 +5,6 @@ const studentQuestionMarkRouter = express.Router();
 
 // studentQuestionMarkRouter.get("/",studentQuestionMarkController.getAllStudentQuestionMarks);
 studentQuestionMarkRouter.post("/create",studentQuestionMarkController.createStudentsQuestionsMark);
+studentQuestionMarkRouter.get("/:studentId/:questionId",studentQuestionMarkController.getStudentQuestionMarksByStudentIdQuestionId);
 
 export default studentQuestionMarkRouter;
