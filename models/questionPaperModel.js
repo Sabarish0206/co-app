@@ -8,3 +8,7 @@ export const createQuestion = async (data) => {
 export const findQuestionByExamId = async (examId)=>{
     return await prisma.question.findMany({ where: { examId } });
 }
+
+export const findQuestionById = async (id)=>{
+    return await prisma.question.findUnique({ where: { id } });
+}

@@ -54,3 +54,8 @@ export const getQuestionsByExam = async (subjectCode,exam) =>{
 
   return result;
 }
+
+export const getCoIdByQuestionId = async (questionId) => {
+  const question = await questionPaperModel.findQuestionById(questionId);
+  return question.co;
+}

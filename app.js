@@ -3,6 +3,7 @@ import subjectRouter from './routes/subjectRoutes.js'
 import studentRouter from './routes/studentRoutes.js'
 import questionPaperRouter from './routes/questionPaperRouter.js';
 import examRouter from './routes/examRoutes.js';
+import studentQuestionMarkRouter from './routes/studentQuestionMarkRoutes.js';
 import cors from 'cors';
 
 const app = express();
@@ -16,6 +17,8 @@ app.use("/subjects",subjectRouter);
 app.use("/students",studentRouter);
 app.use("/questionpaper",questionPaperRouter);
 app.use("/exam",examRouter)
+app.use("/studentQuestionMarks",studentQuestionMarkRouter);
+
 
 
 
