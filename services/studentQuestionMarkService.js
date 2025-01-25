@@ -31,7 +31,7 @@ export const createStudentQuestionsMark = async (studentQuestionsMarkData) => {
         answers: studentQuestionsMarkData.answers
           .filter((answer) => answer.acquiredMark !== '' && answer.acquiredMark !== null) // Exclude empty and null acquiredMarks
           .map((answer) => ({
-            questionId: answer.questionID,
+            questionId: answer.questionId,
             acquiredMarks: answer.acquiredMark,
           })),
       };
@@ -40,7 +40,7 @@ export const createStudentQuestionsMark = async (studentQuestionsMarkData) => {
         acc.push({
           studentId: payload.studentId,
           questionId: answer.questionId,
-          acquiredMarks: answer.acquiredMarks,
+          mark: parseInt(answer.acquiredMarks),
         });
         return acc;
       }, []);
@@ -52,8 +52,7 @@ export const createStudentQuestionsMark = async (studentQuestionsMarkData) => {
           try {
             const result = await createStudentQuestionMark(studentQuestionMark);
             studentQuestionsMark.push(result);
-          // studentQuestionsMark.push(result);
-           console.log(studentQuestionMark);
+            console.log(studentQuestionMark);
           } catch (error) {
             console.error('Error creating student question mark:', error);
             throw error;
@@ -63,8 +62,11 @@ export const createStudentQuestionsMark = async (studentQuestionsMarkData) => {
     };
 
 export const createStudentQuestionMark = async (data) => {  
-    return data;
-    //return await studentQuestionMarkModel.createStudentQuestionMark(data);
+    const existingStudentQuestionMark = await studentQuestionMarkModel.getStudentQuestionMarksByStudentIdQuestionId(data.studentId, data.questionId);
+    if (existingStudentQuestionMark) {
+      return await studentQuestionMarkModel.updateStudentQuestionMark(data);
+    }
+    return await studentQuestionMarkModel.createStudentQuestionMark(data);
 }
 
 export const getStudentQuestionMarksByStudentIdQuestionId = async (studentId, questionId) => {
