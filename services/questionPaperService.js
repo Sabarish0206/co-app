@@ -18,14 +18,14 @@ export const createQuestion = async (subjectId,question,examId) => {
   const coId = await coService.findCoIdorCreateNew(co,examId);
 
   const questionObject = {
-    question: question.question,
-    marks: question.marks,
+    text: question.question,
+    marks: parseInt(question.marks),
     option: question.option,
     subDivision: question.subDivision,
     pi: question.pi,
     bl: question.bl,
-    co: coId,
-    no: question.no,
+    coId: coId,
+    no: parseInt(question.no),
     subjectId: subjectId,
     examId: examId
   }

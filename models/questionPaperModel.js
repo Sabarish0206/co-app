@@ -2,7 +2,7 @@ import prisma from "../config/db.js";
 
 export const createQuestion = async (data) => {
     console.log("Data from questionPaperModel:",data);
-    return data;
+    return await prisma.question.create({ data });
 }
 
 export const findQuestionByExamId = async (examId)=>{
