@@ -8,3 +8,7 @@ export const findCObynameExamId = async (co,examId) => {
    return await prisma.cO.findUnique({ where: { name_examId: { name: co, examId } } }); 
     
 }
+export const getCoNameByCoId=async(coId) => {
+    return await prisma.cO.findUnique({ where: { id: coId } });
+    
+}
