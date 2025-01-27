@@ -47,13 +47,27 @@ export const createQuestions = async (subject,questionList,exam) => {
 }
 
 export const getQuestionsByExam = async (subjectCode,exam) =>{
-  const { id: subjectId } = await getSubjectByCode(subjectCode);
-  const {id: examId} = await findExamByNameSubjectIdYearSemester(subjectId, exam.examName, exam.year,exam.semester)
 
-  const result = await questionPaperModel.findQuestionByExamId(examId);
+  try{
+    const { id: subjectId } = await getSubjectByCode(subjectCode);
+    const {id: examId} = await findExamByNameSubjectIdYearSemester(subjectId, exam.examName, exam.year,exam.semester)
 
-  return result;
-}
+    const questions = await questionPaperModel.findQuestionByExamId(examId);
+
+    const updatedQuestions = await Promise.all(
+      questions.map(async (question) => {
+        const coName = await coService.getCoNameByCoId(question.coId);
+        return { ...question, coName };
+      })
+    );
+
+    return updatedQuestions;
+  } catch (error) {
+  console.error('Error fetching questions:', error);
+  throw error;
+  }
+  
+};
 
 export const getCoIdByQuestionId = async (questionId) => {
   const question = await questionPaperModel.findQuestionById(questionId);

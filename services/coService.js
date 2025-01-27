@@ -28,5 +28,6 @@ export const findCoIdorCreateNew = async (co,examId) => {
   };
 
   export const getCoNameByCoId = async (coId) => {
-    return await coModel.getCoNameByCoId(coId);
+    const co = await coModel.getCoNameByCoId(coId);
+    return co.name;
   }

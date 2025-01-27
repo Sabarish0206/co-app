@@ -50,14 +50,3 @@ export const getQuestionsByExam = async (req,res)=>{
         res.status(500).json({ error: error.message });
     }
 }
-
-
-
- export const getCoNameByCoId = async (req, res) => {
-        try {
-            const coName = await coService.getCoNameByCoId(req.params.coId);
-            res.status(200).json(coName);
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    };
