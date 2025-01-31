@@ -27,3 +27,27 @@ export const updateStudentQuestionMark = async (data) => {
         data
     });
 }
+
+export const getStudentsQuestionsMark = async (studentIds,questionIds) => {
+    const data = await prisma.studentQuestionMark.findMany({
+        where: {
+          studentId: { in: studentIds },
+          questionId: { in: questionIds },
+        },
+        include: {
+          student: {
+            select: { id: true, name: true }, // Include student details
+          },
+          question: {
+            select: { 
+              id: true, 
+              no: true, 
+              option: true, 
+              marks: true, 
+              coId: true 
+            }, // Include question details
+          },
+        },
+      });
+      return data;
+}

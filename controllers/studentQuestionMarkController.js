@@ -17,3 +17,13 @@ export const getStudentQuestionMarksByStudentIdQuestionId = async (req, res) => 
         res.status(500).json({ error: error.message });
     }
 }
+
+export const getStudentsQuestionsMark = async (req, res) => {
+    const {exam,studentDetail}=req.body;
+    try {
+        const studentsQuestionsMark = await studentQuestionMarkService.getStudentsQuestionsMark(exam,studentDetail);
+        res.status(200).json(studentsQuestionsMark);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

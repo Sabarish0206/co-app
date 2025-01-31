@@ -1,5 +1,7 @@
 import { createStudentsCoFromQuestions } from "../services/studentCoMarkService.js";
 import * as studentQuestionMarkModel from "../models/studentQuestionMarkModel.js";
+import {getStudentsByYearSecAndDept} from "../services/studentService.js";
+import {getQuestionsByExam} from "../services/questionPaperService.js";
 
 export const createStudentsQuestionsMark = async (studentsQuestionsMark) => {
 
@@ -72,3 +74,34 @@ export const createStudentQuestionMark = async (data) => {
 export const getStudentQuestionMarksByStudentIdQuestionId = async (studentId, questionId) => {
     return await studentQuestionMarkModel.getStudentQuestionMarksByStudentIdQuestionId(studentId, questionId);
 }
+
+export const getStudentsQuestionsMark = async (exam, studentDetail) => {
+  const students = await getStudentsByYearSecAndDept(studentDetail.year, studentDetail.sec, studentDetail.dept);
+  const questions = await getQuestionsByExam(exam.subjectCode, exam);
+
+  // Fetch existing student question marks
+  const studentIds = students.map(student => student.id);
+  const questionIds = questions.map(question => question.id);
+  const existingMarks = await studentQuestionMarkModel.getStudentsQuestionsMark(studentIds, questionIds);
+
+  // Convert existing marks into a lookup map
+  const marksMap = new Map();
+  existingMarks.forEach(({ studentId, questionId, mark }) => {
+    marksMap.set(`${studentId}-${questionId}`, mark);
+  });
+
+  // Map students with their answers and fill in existing marks if available
+  const studentsQuestionsMarks = students.map(student => ({
+    studentId: student.id,
+    name: student.name,
+    answers: questions.map(question => ({
+      questionId: question.id,
+      acquiredMark: marksMap.get(`${student.id}-${question.id}`) || '', // Use existing mark if available
+      totalMark: question.marks,
+      questionCo: question.coId,
+      questionNo: question.option ? question.no+question.option : question.no+"null",
+    }))
+  }));
+
+  return studentsQuestionsMarks;
+};
