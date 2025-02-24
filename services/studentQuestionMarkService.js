@@ -105,3 +105,22 @@ export const getStudentsQuestionsMark = async (exam, studentDetail) => {
 
   return studentsQuestionsMarks;
 };
+
+export const insertBulkStudentsQuestionsMark = async (studentsQuestionsMark) => {
+  const studentCoMarks = await createStudentsCoFromQuestions(studentsQuestionsMark);
+  const studentsQuestionsMarks = studentsQuestionsMark.flatMap(student => 
+    student?.isChanged ?? true
+      ? student.answers
+          .filter(({ acquiredMark }) => acquiredMark !== null && acquiredMark !== '')
+          .map(({ questionId, acquiredMark }) => ({
+            studentId: student.studentId,
+            questionId,
+            mark: parseInt(acquiredMark, 10)
+          }))
+      : []
+  );
+  console.log(studentsQuestionsMarks);
+  const result = await studentQuestionMarkModel.upsertBulkStudentsQuestionsMark(studentsQuestionsMarks);
+  console.log(result);
+  return result, studentCoMarks;
+}

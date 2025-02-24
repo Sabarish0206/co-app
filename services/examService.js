@@ -7,7 +7,7 @@ export const createExam = async (data) => {
     if (!subject) {
         throw new Error(`No subject with id ${data.subjectId}`);
     }
-    const existingExam = await examModel.findExamByNameSubjectIdYear(data.subjectId, data.name, data.year);
+    const existingExam = await examModel.findExamByNameSubjectIdYearSemester(data.subjectId, data.name, data.year, data.semester);
     if (existingExam) {
         throw new Error(`Exam for given subject, semester ${data.semester}, year ${data.year} already exists`);
     }

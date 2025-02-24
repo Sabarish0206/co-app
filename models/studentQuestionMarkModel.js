@@ -50,4 +50,16 @@ export const getStudentsQuestionsMark = async (studentIds,questionIds) => {
         },
       });
       return data;
-}
+};
+
+export const upsertBulkStudentsQuestionsMark = async (studentQuestionMarks) => {
+  return await Promise.all(
+    studentQuestionMarks.map((item) =>
+      prisma.studentQuestionMark.upsert({
+        where: { studentId_questionId: { studentId: item.studentId, questionId: item.questionId } },
+        update: { marks: item.marks },
+        create: { ...item },
+      })
+    )
+  );
+};

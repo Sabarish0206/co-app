@@ -25,7 +25,10 @@ export const createStudentCoMark = async (data) => {
 }
 
 export const createStudentsCoFromQuestions = async (data) => {
-    return Promise.all(data.map(createStudentCoFromQuestions));
+    const studentCoFromQuestions = await Promise.all(data.map(createStudentCoFromQuestions));
+    const studentCoFromQuestionsArray = studentCoFromQuestions.flat();
+    console.log('studentCoFromQuestionsArray', studentCoFromQuestionsArray);
+    return studentCoMarkModel.uploadOrUpdateManyStudentCoMark(studentCoFromQuestionsArray);
 }
 
 export const createStudentCoFromQuestions = async (data) => {
@@ -66,7 +69,7 @@ export const createStudentCoFromQuestions = async (data) => {
   );    
 
     console.log('studentCoMarksArray', studentCoMarksArray);
-    return createStudentCoMarks(studentCoMarksArray);
+    return studentCoMarksArray;
 }
 
 export const processStudentCoMark = async (data) => {

@@ -20,3 +20,15 @@ export const updateStudentCoMark = async (data) => {
         data
     });
 }
+
+export const uploadOrUpdateManyStudentCoMark = async (studentQuestionMarks) => {
+    return await Promise.all(
+        studentQuestionMarks.map((item) =>
+          prisma.studentCOMark.upsert({
+            where: { studentId_coId: { studentId: item.studentId, coId: item.coId } },
+            update: { mark: item.mark },
+            create: { ...item },
+          })
+        )
+      );
+}
