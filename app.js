@@ -27,8 +27,8 @@ app.use("/",(req,res,next)=>{
     res.send("<h1>Hi!!</h1>");
 });
 
-// app.listen(3000, () => {
-//     console.log(`Server is running on http://localhost:${PORT}`);
-// });
+app.listen(3000, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
 
 export default app;
