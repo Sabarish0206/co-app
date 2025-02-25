@@ -186,8 +186,7 @@ export const saveReportToFile = async (reportData, filePath) => {
   } else {
     console.warn('No data available to generate the report.');
   }
-
-  return workbook;
+  
   await workbook.xlsx.writeFile(filePath);
   return filePath;
 };
