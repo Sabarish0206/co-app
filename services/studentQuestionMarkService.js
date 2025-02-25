@@ -145,13 +145,15 @@ export const getStudentsQuestionsMarkReport = async (studentsQuestionsMarks) => 
     };
 
     for (const answer of student.answers) {
-      studentReport[answer.questionNo] = answer.acquiredMark;
+      studentReport[answer.questionNo.replace("null", "")] = answer.acquiredMark;
     }
 
     studentReport["totalMark"] = totalMarks;
 
+    let coIndex = 1;
     for (const co of Object.keys(coMarks)) {
-      studentReport[`co${co}`] = coMarks[co];
+      studentReport[`CO${coIndex}`] = coMarks[co];
+      coIndex++;
     }
 
     return studentReport;
