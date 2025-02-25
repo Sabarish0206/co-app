@@ -156,13 +156,15 @@ export const getStudentsQuestionsMarkReport = async (studentsQuestionsMarks) => 
     };
 
     for (const answer of student.answers) {
-      studentReport[answer.questionNo] = answer.acquiredMark;
+      studentReport[answer.questionNo.replace("null", "")] = answer.acquiredMark;
     }
 
     studentReport["totalMark"] = totalMarks;
 
+    let coIndex = 1;
     for (const co of Object.keys(coMarks)) {
-      studentReport[`co${co}`] = coMarks[co];
+      studentReport[`CO${coIndex}`] = coMarks[co];
+      coIndex++;
     }
 
     return studentReport;
@@ -195,8 +197,7 @@ export const saveReportToFile = async (reportData, filePath) => {
   } else {
     console.warn('No data available to generate the report.');
   }
-
-  return workbook;
+  
   await workbook.xlsx.writeFile(filePath);
   return filePath;
 };
