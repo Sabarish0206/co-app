@@ -27,3 +27,20 @@ export const getStudentsQuestionsMark = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+export const downloadReport = async (req, res) => {
+    console.log(req.body);
+    const {exam,studentDetail}=req.body;
+    try {
+        const workbook = await studentQuestionMarkService.generateReport(exam,studentDetail);
+        const filePath = 'student_questions_report.xlsx';
+        const reportFilePath = await studentQuestionMarkService.saveReportToFile(workbook, filePath);
+        res.download(reportFilePath, filePath, (err) => {
+            if (err) {
+                res.status(500).json({ error: 'Error downloading the report' });
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

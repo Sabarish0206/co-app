@@ -1,78 +1,79 @@
 import { createStudentsCoFromQuestions } from "../services/studentCoMarkService.js";
 import * as studentQuestionMarkModel from "../models/studentQuestionMarkModel.js";
-import {getStudentsByYearSecAndDept} from "../services/studentService.js";
-import {getQuestionsByExam} from "../services/questionPaperService.js";
+import { getStudentsByYearSecAndDept } from "../services/studentService.js";
+import { getQuestionsByExam } from "../services/questionPaperService.js";
+import ExcelJS from 'exceljs'; // Ensure ExcelJS is imported correctly for handling Excel files
 
 export const createStudentsQuestionsMark = async (studentsQuestionsMark) => {
 
-const studentsQuestionsMarks =[]
-const studentCoMarks = await createStudentsCoFromQuestions(studentsQuestionsMark);
+  const studentsQuestionsMarks = []
+  const studentCoMarks = await createStudentsCoFromQuestions(studentsQuestionsMark);
 
-for (const studentQuestionsMark of studentsQuestionsMark) {
+  for (const studentQuestionsMark of studentsQuestionsMark) {
     const payload = {
       studentId: studentQuestionsMark.studentId,
       answers: studentQuestionsMark.answers,
     };
     try {
-        const response = await createStudentQuestionsMark(payload);
-        studentsQuestionsMarks.push(response); 
-      } catch (error) {
-        console.error(`Error processing student ID ${studentQuestionsMark.studentId}:`, error);
-      }
+      const response = await createStudentQuestionsMark(payload);
+      studentsQuestionsMarks.push(response);
+    } catch (error) {
+      console.error(`Error processing student ID ${studentQuestionsMark.studentId}:`, error);
     }
-    console.log(studentsQuestionsMarks);
-    return {studentsQuestionsMarks, studentCoMarks};
+  }
+  console.log(studentsQuestionsMarks);
+  return { studentsQuestionsMarks, studentCoMarks };
 };
 
 export const createStudentQuestionsMark = async (studentQuestionsMarkData) => {
 
-    const studentQuestionsMark = [];
+  const studentQuestionsMark = [];
 
-    const payload = {
-        studentId: studentQuestionsMarkData.studentId,
-        answers: studentQuestionsMarkData.answers
-          .filter((answer) => answer.acquiredMark !== '' && answer.acquiredMark !== null) // Exclude empty and null acquiredMarks
-          .map((answer) => ({
-            questionId: answer.questionId,
-            acquiredMarks: answer.acquiredMark,
-          })),
-      };
+  const payload = {
+    studentId: studentQuestionsMarkData.studentId,
+    answers: studentQuestionsMarkData.answers
+      .filter((answer) => answer.acquiredMark !== '' && answer.acquiredMark !== null) // Exclude empty and null acquiredMarks
+      .map((answer) => ({
+        questionId: answer.questionId,
+        acquiredMarks: answer.acquiredMark,
+      })),
+  };
 
-      const studentQuestionMarks = payload.answers.reduce((acc, answer) => {
-        acc.push({
-          studentId: payload.studentId,
-          questionId: answer.questionId,
-          mark: parseInt(answer.acquiredMarks),
-        });
-        return acc;
-      }, []);
-  
-      if (payload.answers.length === 0) return [];
+  const studentQuestionMarks = payload.answers.reduce((acc, answer) => {
+    acc.push({
+      studentId: payload.studentId,
+      questionId: answer.questionId,
+      mark: parseInt(answer.acquiredMarks),
+    });
+    return acc;
+  }, []);
 
-       
-        for (const studentQuestionMark of studentQuestionMarks) {
-          try {
-            const result = await createStudentQuestionMark(studentQuestionMark);
-            studentQuestionsMark.push(result);
-            console.log(studentQuestionMark);
-          } catch (error) {
-            console.error('Error creating student question mark:', error);
-            throw error;
-          }
-        }
-        return studentQuestionsMark;
-    };
+  if (payload.answers.length === 0) return [];
 
-export const createStudentQuestionMark = async (data) => {  
-    const existingStudentQuestionMark = await studentQuestionMarkModel.getStudentQuestionMarksByStudentIdQuestionId(data.studentId, data.questionId);
-    if (existingStudentQuestionMark) {
-      return await studentQuestionMarkModel.updateStudentQuestionMark(data);
+
+  for (const studentQuestionMark of studentQuestionMarks) {
+    try {
+      const result = await createStudentQuestionMark(studentQuestionMark);
+      studentQuestionsMark.push(result);
+      console.log(studentQuestionMark);
+    } catch (error) {
+      console.error('Error creating student question mark:', error);
+      throw error;
     }
-    return await studentQuestionMarkModel.createStudentQuestionMark(data);
+  }
+  return studentQuestionsMark;
+};
+
+export const createStudentQuestionMark = async (data) => {
+  const existingStudentQuestionMark = await studentQuestionMarkModel.getStudentQuestionMarksByStudentIdQuestionId(data.studentId, data.questionId);
+  if (existingStudentQuestionMark) {
+    return await studentQuestionMarkModel.updateStudentQuestionMark(data);
+  }
+  return await studentQuestionMarkModel.createStudentQuestionMark(data);
 }
 
 export const getStudentQuestionMarksByStudentIdQuestionId = async (studentId, questionId) => {
-    return await studentQuestionMarkModel.getStudentQuestionMarksByStudentIdQuestionId(studentId, questionId);
+  return await studentQuestionMarkModel.getStudentQuestionMarksByStudentIdQuestionId(studentId, questionId);
 }
 
 export const getStudentsQuestionsMark = async (exam, studentDetail) => {
@@ -99,7 +100,7 @@ export const getStudentsQuestionsMark = async (exam, studentDetail) => {
       acquiredMark: marksMap.get(`${student.id}-${question.id}`) || '', // Use existing mark if available
       totalMark: question.marks,
       questionCo: question.coId,
-      questionNo: question.option ? question.no+question.option : question.no+"null",
+      questionNo: question.option ? question.no + question.option : question.no + "null",
     }))
   }));
 
@@ -108,15 +109,15 @@ export const getStudentsQuestionsMark = async (exam, studentDetail) => {
 
 export const insertBulkStudentsQuestionsMark = async (studentsQuestionsMark) => {
   const studentCoMarks = await createStudentsCoFromQuestions(studentsQuestionsMark);
-  const studentsQuestionsMarks = studentsQuestionsMark.flatMap(student => 
+  const studentsQuestionsMarks = studentsQuestionsMark.flatMap(student =>
     student?.isChanged ?? true
       ? student.answers
-          .filter(({ acquiredMark }) => acquiredMark !== null && acquiredMark !== '')
-          .map(({ questionId, acquiredMark }) => ({
-            studentId: student.studentId,
-            questionId,
-            mark: parseInt(acquiredMark, 10)
-          }))
+        .filter(({ acquiredMark }) => acquiredMark !== null && acquiredMark !== '')
+        .map(({ questionId, acquiredMark }) => ({
+          studentId: student.studentId,
+          questionId,
+          mark: parseInt(acquiredMark, 10)
+        }))
       : []
   );
   console.log(studentsQuestionsMarks);
@@ -124,3 +125,66 @@ export const insertBulkStudentsQuestionsMark = async (studentsQuestionsMark) => 
   console.log(result);
   return result, studentCoMarks;
 }
+
+export const getStudentsQuestionsMarkReport = async (studentsQuestionsMarks) => {
+
+  const report = studentsQuestionsMarks.map(student => {
+    const totalMarks = student.answers.reduce((acc, answer) => acc + (answer.acquiredMark || 0), 0);
+    const coMarks = {};
+
+    student.answers.forEach(answer => {
+      const coId = answer.questionCo;
+      if (!coMarks[coId]) {
+        coMarks[coId] = 0;
+      }
+      coMarks[coId] += answer.acquiredMark || 0;
+    });
+
+    var studentReport = {
+      name: student.name,
+    };
+
+    for (const answer of student.answers) {
+      studentReport[answer.questionNo] = answer.acquiredMark;
+    }
+
+    studentReport["totalMark"] = totalMarks;
+
+    for (const co of Object.keys(coMarks)) {
+      studentReport[`co${co}`] = coMarks[co];
+    }
+
+    return studentReport;
+  });
+
+  return report;
+}
+
+export const generateReport = async (exam, studentDetail) => {
+  const studentsQuestionsMarks = await getStudentsQuestionsMark(exam, studentDetail);
+  var reportData = await getStudentsQuestionsMarkReport(studentsQuestionsMarks);
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Student Questions Report');
+
+  // Define columns
+  if (reportData.length > 0) {
+    worksheet.columns = Object.keys(reportData[0]).map(key => ({ header: key, key, width: 15 }));
+
+    // Add rows to the worksheet
+    reportData.forEach(student => {
+      worksheet.addRow(student);
+    });
+  } else {
+    console.warn('No data available to generate the report.');
+  }
+
+  return workbook;
+};
+
+
+export const saveReportToFile = async (workbook, filePath) => {
+  // Save the workbook to a file
+  await workbook.xlsx.writeFile(filePath);
+  return filePath;
+};
