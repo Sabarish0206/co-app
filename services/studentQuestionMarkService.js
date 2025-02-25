@@ -1,4 +1,4 @@
-import { createStudentsCoFromQuestions } from "../services/studentCoMarkService.js";
+import { createStudentsCoFromQuestions, getStudentsCoMarks } from "../services/studentCoMarkService.js";
 import * as studentQuestionMarkModel from "../models/studentQuestionMarkModel.js";
 import { getStudentsByYearSecAndDept } from "../services/studentService.js";
 import { getQuestionsByExam } from "../services/questionPaperService.js";
@@ -79,11 +79,15 @@ export const getStudentQuestionMarksByStudentIdQuestionId = async (studentId, qu
 export const getStudentsQuestionsMark = async (exam, studentDetail) => {
   const students = await getStudentsByYearSecAndDept(studentDetail.year, studentDetail.sec, studentDetail.dept);
   const questions = await getQuestionsByExam(exam.subjectCode, exam);
-
+  const uniqueCOs = [...new Set(questions.map(question => question.coId))];
+ 
   // Fetch existing student question marks
   const studentIds = students.map(student => student.id);
   const questionIds = questions.map(question => question.id);
   const existingMarks = await studentQuestionMarkModel.getStudentsQuestionsMark(studentIds, questionIds);
+
+  const studentsCoMarks = await getStudentsCoMarks(studentIds,uniqueCOs);
+  console.log("students co marks:",studentsCoMarks)
 
   // Convert existing marks into a lookup map
   const marksMap = new Map();
@@ -101,9 +105,16 @@ export const getStudentsQuestionsMark = async (exam, studentDetail) => {
       totalMark: question.marks,
       questionCo: question.coId,
       questionNo: question.option ? question.no + question.option : question.no + "null",
-    }))
+    })),
+    coMarks: studentsCoMarks
+      .filter(coMark => coMark.studentId === student.id)
+      .map(coMark => ({
+        coId: coMark.coId,
+        mark: coMark.mark,
+        coTotal: coMark.coTotal
+      }))
   }));
-
+  console.log(studentsQuestionsMarks);
   return studentsQuestionsMarks;
 };
 

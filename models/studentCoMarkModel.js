@@ -32,3 +32,13 @@ export const uploadOrUpdateManyStudentCoMark = async (studentQuestionMarks) => {
         )
       );
 }
+
+export const getStudentsCoMarks = async (studentIds, coIds) => {
+  return await prisma.studentCOMark.findMany({
+    where: {
+      studentId: { in: studentIds },
+      coId: { in: coIds },
+    },
+  });
+};
+  

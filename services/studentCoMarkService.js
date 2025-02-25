@@ -98,3 +98,8 @@ export const processStudentCoMark = async (data) => {
 
   return removeDuplicateOptions;
 }
+
+export const getStudentsCoMarks = async (studentIds, coIds) => {
+  const studentCoMarks = await studentCoMarkModel.getStudentsCoMarks(studentIds,coIds);
+  return studentCoMarks;
+};
