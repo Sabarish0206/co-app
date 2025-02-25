@@ -164,6 +164,12 @@ export const generateReport = async (exam, studentDetail) => {
   const studentsQuestionsMarks = await getStudentsQuestionsMark(exam, studentDetail);
   var reportData = await getStudentsQuestionsMarkReport(studentsQuestionsMarks);
 
+  return reportData;
+};
+
+
+export const saveReportToFile = async (reportData, filePath) => {
+  // Save the workbook to a file
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Student Questions Report');
 
@@ -180,11 +186,6 @@ export const generateReport = async (exam, studentDetail) => {
   }
 
   return workbook;
-};
-
-
-export const saveReportToFile = async (workbook, filePath) => {
-  // Save the workbook to a file
   await workbook.xlsx.writeFile(filePath);
   return filePath;
 };

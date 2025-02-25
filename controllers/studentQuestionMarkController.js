@@ -32,9 +32,9 @@ export const downloadReport = async (req, res) => {
     console.log(req.body);
     const {exam,studentDetail}=req.body;
     try {
-        const workbook = await studentQuestionMarkService.generateReport(exam,studentDetail);
+        const reportData = await studentQuestionMarkService.generateReport(exam,studentDetail);
         const filePath = 'student_questions_report.xlsx';
-        const reportFilePath = await studentQuestionMarkService.saveReportToFile(workbook, filePath);
+        const reportFilePath = await studentQuestionMarkService.saveReportToFile(reportData, filePath);
         res.download(reportFilePath, filePath, (err) => {
             if (err) {
                 res.status(500).json({ error: 'Error downloading the report' });
@@ -44,3 +44,15 @@ export const downloadReport = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+export const getReport = async (req, res) => {
+    const {exam,studentDetail}=req.body;
+    try {
+        res.status(200).json(
+            await studentQuestionMarkService.generateReport(exam,studentDetail)
+        );
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
