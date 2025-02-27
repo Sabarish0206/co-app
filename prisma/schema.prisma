@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -115,6 +114,9 @@ enum ExamName {
   SerialTest3
   oddSem
   evenSem
+  Assignment1
+  Assignment2
+  Assignment3
 }
 
 enum Year {

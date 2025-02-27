@@ -69,12 +69,13 @@ export const parseDocxTables = async (filePath) => {
           const cellText = $(cell).text().trim().toLowerCase();
           const wordsToCheck = ['no', 's.no', 'part-a', 'marks', 'bl', 'co', 'pi'];
           const partRegex = /part\s*[-–]?\s*\w/i;
+          const answerRegex = /^answer all( the)? question(s)?/i;
 
           if (wordsToCheck.includes(cellText)) {
             headers[cellIndex] = cellText;
-          } else if (partRegex.test(cellText)) {
+          } else if (partRegex.test(cellText) || answerRegex.test(cellText)) {
             headers[cellIndex] = 'question';
-          }
+          } 
         });
 
         if (headers.length > 0) {
@@ -238,6 +239,6 @@ function processQuestionsSubdivision(questionList) {
           q.subDivision = (subdivisionCounter + i).toString();
       });
   }
-
+  
   return questionList;
 }
