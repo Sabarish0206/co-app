@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -16,23 +16,23 @@ model User {
 }
 
 model Subject {
-  id         String          @id @default(cuid())
-  name       String
-  code       String          @unique
-  exams      Exam[]
-  questions  Question[]
+  id        String     @id @default(cuid())
+  name      String
+  code      String     @unique
+  exams     Exam[]
+  questions Question[]
 }
 
 model CO {
   id          String          @id @default(cuid())
-  name        Int
   description String?
   examId      String
-  exam        Exam            @relation(fields:[examId],references:[id])
+  name        Int
+  exam        Exam            @relation(fields: [examId], references: [id])
   questions   Question[]
   studentCOs  StudentCOMark[]
 
-  @@unique([name,examId])
+  @@unique([name, examId])
 }
 
 model Exam {
@@ -40,43 +40,42 @@ model Exam {
   name      ExamName
   subjectId String
   year      Int
-  subject   Subject    @relation(fields: [subjectId], references: [id])
   semester  Int
+  cos       CO[]
+  subject   Subject    @relation(fields: [subjectId], references: [id])
   questions Question[]
-  cos        CO[]    
 
-  @@unique([subjectId, name, year,semester])  
+  @@unique([subjectId, name, year, semester])
 }
 
 model Question {
-  id           String        @id @default(cuid())
-  no           Int
-  option       String?
-  subDivision  String?
-  text         String
-  marks        Int
-  coId         String?
-  pi           String?
-  bl           String?
-  subjectId    String
-  examId       String
-
-  co           CO?            @relation(fields: [coId], references: [id])
-  exam         Exam          @relation(fields: [examId], references: [id])
-  subject      Subject       @relation(fields: [subjectId], references: [id])
+  id                   String                @id @default(cuid())
+  text                 String?
+  coId                 String?
+  subjectId            String
+  examId               String
+  marks                Int
+  pi                   String?
+  option               String?
+  subDivision          String?
+  no                   Int
+  bl                   String?
+  co                   CO?                   @relation(fields: [coId], references: [id])
+  exam                 Exam                  @relation(fields: [examId], references: [id])
+  subject              Subject               @relation(fields: [subjectId], references: [id])
   studentQuestionMarks StudentQuestionMark[]
 
-  @@unique([no,subDivision,option,examId])
+  @@unique([no, subDivision, option, examId])
 }
 
 model Student {
-  id           String          @id @default(cuid())
-  name         String
-  rollNumber   String          @unique
-  year         Year
-  sec          String
-  department   Department      @default(CSE)
-  studentCOs   StudentCOMark[]
+  id                   String                @id @default(cuid())
+  name                 String
+  rollNumber           String                @unique
+  year                 Year
+  sec                  String
+  department           Department            @default(CSE)
+  studentCOs           StudentCOMark[]
   studentQuestionMarks StudentQuestionMark[]
 }
 
@@ -84,23 +83,23 @@ model StudentQuestionMark {
   id         String   @id @default(cuid())
   studentId  String
   questionId String
-  mark      Int
+  mark       Int
   question   Question @relation(fields: [questionId], references: [id])
   student    Student  @relation(fields: [studentId], references: [id])
 
-  @@unique([studentId,questionId])
+  @@unique([studentId, questionId])
 }
 
 model StudentCOMark {
   id        String  @id @default(cuid())
   studentId String
   coId      String
-  mark     Int
   coTotal   Int
+  mark      Int
   co        CO      @relation(fields: [coId], references: [id])
   student   Student @relation(fields: [studentId], references: [id])
 
-  @@unique([studentId,coId])
+  @@unique([studentId, coId])
 }
 
 enum Role {
@@ -117,6 +116,10 @@ enum ExamName {
   Assignment1
   Assignment2
   Assignment3
+  Quiz1
+  Quiz2
+  CaseStudy1
+  CaseStudy2
 }
 
 enum Year {
